@@ -7,7 +7,6 @@ variable "common" {
     dynamodb_state_lock       = string
     project                   = string
     database_name             = string
-    master_username           = string
   })
 }
 

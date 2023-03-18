@@ -29,7 +29,10 @@ remote_state {
 
 inputs = {
   common = local.common
-  environment = local.container_id
-  network_data = local.network
-  availability_zones  = ["${local.common.region}a", "${local.common.region}b"]
+  data = {
+    environment = local.container_id
+    network_data = local.network
+    availability_zones  = ["${local.common.region}a", "${local.common.region}b"]
+    production = false
+  }
 }

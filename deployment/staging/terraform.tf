@@ -11,10 +11,8 @@ terraform {
   backend "s3" {}
 }
 
-module "vpc" {
+module "platform" {
   source   = "../../modules/platform"
   common = var.common
-  network_data = var.network_data
-  availability_zones = var.availability_zones
-  environment = var.environment
+  data = var.data
 }
