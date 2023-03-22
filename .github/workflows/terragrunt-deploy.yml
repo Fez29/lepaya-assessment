@@ -4,11 +4,8 @@ on:
   push:
     branches:
       - 'features/**'
-  pull_request:
-    types:
-      - closed
-    branches:
       - main
+  pull_request:
 
 jobs:
   deploy:
