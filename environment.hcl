@@ -1,6 +1,5 @@
 inputs = {
     staging = {
-        terraform_state_s3_bucket   = "my-lepaya-demo-bucket-staging"
         data_s3_bucket              = "demo-data-staging"
         dynamodb_state_lock         = "my-lepaya-demo-terraform-state-lock-staging"
         database_name               = "mysqlserverlessv2staging"
@@ -12,7 +11,6 @@ inputs = {
         intra_subnets = ["10.10.101.0/24", "10.10.102.0/24", "10.10.103.0/24"]
     }
     production = {
-        terraform_state_s3_bucket   = "my-lepaya-demo-bucket-production"
         data_s3_bucket              = "demo-data-production"
         dynamodb_state_lock         = "my-lepaya-demo-terraform-state-lock-production"
         database_name               = "mysqlserverlessv2production"

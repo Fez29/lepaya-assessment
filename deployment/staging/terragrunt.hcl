@@ -1,11 +1,7 @@
 locals {
   container_id  = basename(get_terragrunt_dir())
   common        = read_terragrunt_config(find_in_parent_folders("common.hcl")).inputs
-  network     = {
-    vpc_cidr_block = "172.16.0.0/16"
-    public_subnet_cidrs = ["172.16.1.0/24", "172.16.2.0/24"]
-    private_subnet_cidrs = ["172.16.3.0/24", "172.16.4.0/24"]
-  }
+  environment_data = read_terragrunt_config(find_in_parent_folders("environment.hcl")).inputs
 }
 
 remote_state {
@@ -13,7 +9,7 @@ remote_state {
 
   config = {
     encrypt        = true
-    bucket         = local.common.terraform_state_s3_bucket
+    bucket         = local.common.terraform_state_s3_bucket_prefix
     key            = "states/${local.container_id}/terraform.tfstate"
     region         = local.common.region
     dynamodb_table = "terraform-locks"
@@ -31,7 +27,7 @@ inputs = {
   common = local.common
   data = {
     environment = local.container_id
-    network_data = local.network
+    environment_data = local.environment_data.staging
     availability_zones  = ["${local.common.region}a", "${local.common.region}b"]
     production = false
   }
