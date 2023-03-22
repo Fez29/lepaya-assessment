@@ -12,16 +12,19 @@ terraform {
 }
 
 module "platform" {
-  source   = "../../modules/platform"
+  source = "../../modules/platform"
   common = var.common
-  data = var.data
+  data   = var.data
 }
 
-resource "aws_s3_bucket_object" "bucket" {
-  for_each = fileset(path.module, "data/*.csv")
+resource "aws_s3_bucket_object" "csv" {
   bucket   = module.platform.aws_s3_bucket_output.id
-  key      = each.key
+  key      = "data/Random_emails.csv"
   acl      = "private" # or can be "public-read"
-  source   = each.key
-  etag     = filemd5("${each.key}")
+  source   = "data/Random_emails.csv"
+  etag     = filemd5("data/Random_emails.csv")
+
+  depends_on = [
+    module.platform
+  ]
 }
