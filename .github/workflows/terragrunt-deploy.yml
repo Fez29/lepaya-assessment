@@ -50,7 +50,7 @@ jobs:
       run: |
         make prepare-lambda
 
-      - name: Set Environment Variable Based on Branch
+    - name: Set Environment Variable Based on Branch
       run: |
         BRANCH_NAME=${GITHUB_REF#refs/heads/}
         VARIABLE_VALUE=""
