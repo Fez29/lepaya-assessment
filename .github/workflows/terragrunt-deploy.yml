@@ -36,6 +36,16 @@ jobs:
         chmod +x terragrunt_linux_amd64
         sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install pip
+      run: |
+        python -m ensurepip --upgrade
+        python -m pip install --upgrade pip
+
     - name: Deploy Infrastructure with Terragrunt
       working-directory: ${{ github.workspace }}
       run: |
