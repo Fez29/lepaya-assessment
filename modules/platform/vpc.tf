@@ -1,8 +1,8 @@
 # Create VPC
 resource "aws_vpc" "main" {
-  cidr_block            = var.data.environment_data.vpc_cidr_block
-  enable_dns_support    = true
-  enable_dns_hostnames  = true
+  cidr_block           = var.data.environment_data.vpc_cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Name = var.common.project
   }

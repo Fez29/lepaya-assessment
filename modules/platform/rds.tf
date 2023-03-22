@@ -22,7 +22,7 @@ resource "aws_secretsmanager_secret" "db_password_secret" {
 
 resource "aws_secretsmanager_secret_version" "db_password_secret_version" {
   secret_id     = aws_secretsmanager_secret.db_password_secret.id
-  secret_string = "${data.aws_secretsmanager_random_password.db_password.random_password}"
+  secret_string = data.aws_secretsmanager_random_password.db_password.random_password
   depends_on = [
     aws_secretsmanager_secret.db_password_secret,
     data.aws_secretsmanager_random_password.db_password,
@@ -30,7 +30,7 @@ resource "aws_secretsmanager_secret_version" "db_password_secret_version" {
 }
 
 data "aws_secretsmanager_secret_version" "db_password_secret" {
-  secret_id                  = aws_secretsmanager_secret.db_password_secret.id
+  secret_id = aws_secretsmanager_secret.db_password_secret.id
   depends_on = [
     aws_secretsmanager_secret_version.db_password_secret_version
   ]
@@ -52,7 +52,7 @@ resource "aws_rds_cluster" "database" {
   # TODO: change to using AWS secrets
   master_username = var.common.master_username
   #master_password = "password"
-  master_password                     = "${data.aws_secretsmanager_secret_version.db_password_secret.secret_string}"
+  master_password                     = data.aws_secretsmanager_secret_version.db_password_secret.secret_string
   backup_retention_period             = 7
   preferred_backup_window             = "03:00-04:00"
   deletion_protection                 = var.data.production == true ? true : false
@@ -93,15 +93,15 @@ resource "aws_security_group" "database_rds_sg" {
   name_prefix = "${var.data.environment}-${var.common.project}-rds-sg"
   vpc_id      = aws_vpc.main.id
   ingress {
-    from_port = 3306
-    to_port   = 3306
-    protocol  = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 }
 
 resource "aws_db_subnet_group" "database" {
-  name       = "${var.data.environment}-${var.common.project}-rds"
+  name = "${var.data.environment}-${var.common.project}-rds"
   # TODO: change back to private
   subnet_ids = data.aws_subnets.public_subnets.ids # Replace with your preferred subnets
   depends_on = [

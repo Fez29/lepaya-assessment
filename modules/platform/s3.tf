@@ -49,7 +49,7 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
       values   = ["${aws_vpc.main.id}"]
     }
   }
-    statement {
+  statement {
     principals {
       type        = "AWS"
       identifiers = ["*"]
