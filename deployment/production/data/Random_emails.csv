@@ -1,14 +1,8 @@
-﻿"I have details we need to discuss regarding stock options, when are you available for a chat?
-Kind Regards
-Gareth Fraser
-+49 160 242 8750"
-"Hello, how are you? Haven't heard from you in some time.
-Kind Regards
-Gareth Fraser
-+49 160 242 8750"
-"I have something that you will find very interesting. Keen to hear more?
-Kind Regards
-Gareth Fraser
-+49 160 242 8750"
-
-
+﻿id,emails
+1,john@example.com
+2,jane@example.com
+3,doe@example.com
+4,smith@example.com
+5,smith2@example.com
+6,smith4@example.com
+7,doe@example.com
