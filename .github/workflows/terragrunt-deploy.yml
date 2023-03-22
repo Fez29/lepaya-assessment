@@ -1,24 +1,18 @@
 name: Terragrunt Deploy
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    types:
-      - open
     branches:
       - test-github-action
-  pull_request:
-    types:
-      - closed
-    branches:
       - main
+    types:
+      - opened
+      - closed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    #if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
+    if: (github.event.action == 'opened' && github.event.pull_request.base.ref == 'test-github-action') || (github.event.action == 'closed' && github.event.pull_request.base.ref == 'main')
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
