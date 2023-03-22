@@ -107,7 +107,7 @@ resource "aws_security_group" "database_rds_sg" {
 resource "aws_db_subnet_group" "database" {
   name = "${var.data.environment}-${var.common.project}-rds"
   # TODO: change back to private
-  subnet_ids = data.aws_subnets.public_subnets.ids # Replace with your preferred subnets
+  subnet_ids = data.aws_subnets.private_subnets.ids # Replace with your preferred subnets
   depends_on = [
     data.aws_subnets.private_subnets
   ]
