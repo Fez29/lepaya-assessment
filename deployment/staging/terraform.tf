@@ -30,18 +30,18 @@ resource "aws_s3_bucket_object" "csv" {
 }
 
 module "lambda" {
-  source          = "../../modules/lambda"
-  common          = var.common
-  data            = var.data
-  vpc             = module.platform.vpc
-  private_subnets = module.platform.private_subnets
-  RDS_HOST        = module.platform.RDS_HOST
-  RDS_DATABASE    = module.platform.RDS_DATABASE
-  SECRETS_NAME    = module.platform.SECRETS_NAME
-  S3_OBJECT_KEY   = aws_s3_bucket_object.csv.key
-  S3_BUCKET_NAME  = module.platform.aws_s3_bucket_output.id
-  #TODO
-  RDS_TABLE = "emails"
+  source             = "../../modules/lambda"
+  common             = var.common
+  data               = var.data
+  vpc                = module.platform.vpc
+  private_subnets    = module.platform.private_subnets
+  RDS_HOST           = module.platform.RDS_HOST
+  RDS_DATABASE       = module.platform.RDS_DATABASE
+  SECRETS_NAME       = module.platform.SECRETS_NAME
+  S3_OBJECT_KEY      = aws_s3_bucket_object.csv.key
+  S3_BUCKET_NAME     = module.platform.aws_s3_bucket_output.id
+  DB_MASTER_USERNAME = var.common.master_username
+  RDS_TABLE          = "emails"
 
   depends_on = [
     aws_s3_bucket_object.csv,

@@ -31,8 +31,10 @@ module "lambda_function_in_vpc" {
     "RDS_TABLE"               = "${var.RDS_TABLE}"
     "SECRETS_NAME"            = "${var.SECRETS_NAME}"
     "POWERTOOLS_SERVICE_NAME" = "lambda"
-    "LOG_LEVEL"               = "ERROR"
+    "LOG_LEVEL"               = "INFO"
     "REGION"                  = "${var.common.region}"
+    "RDS_TABLE"               = "${var.RDS_TABLE}"
+    "DB_MASTER_USERNAME"      = "${var.DB_MASTER_USERNAME}"
   }
 
   source_path    = "../../src"
@@ -62,7 +64,7 @@ module "lambda_function_in_vpc" {
     s3_read = {
       effect    = "Allow",
       actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-      resources = ["${aws_s3_bucket.builds.arn}/*"]
+      resources = ["arn:aws:s3:::${var.S3_BUCKET_NAME}/*"]
     },
     ec2_delete_network_interface = {
       effect    = "Allow",
@@ -87,7 +89,7 @@ resource "aws_cloudwatch_event_target" "trigger_lambda" {
 
 resource "aws_cloudwatch_event_rule" "trigger_lambda" {
   name_prefix         = "lambda_csv"
-  schedule_expression = "cron(0 * * * *)"
+  schedule_expression = "rate(60 minutes)"
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
