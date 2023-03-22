@@ -24,12 +24,12 @@ jobs:
         AWS_SECRET_ACCESS_KEY=""
         if [[ "$BRANCH_NAME" == "main" ]]; then
           echo "environment_value=production" >> $GITHUB_ENV
-          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
-        else
-          echo "environment_value=staging" >> $GITHUB_ENV
           echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_PRODUCTION }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PRODUCTION }}" >> $GITHUB_ENV
+        else
+          echo "environment_value=staging" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
         fi
     
     - name: Configure AWS Credentials Action For GitHub Actions
