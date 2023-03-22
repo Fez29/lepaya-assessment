@@ -15,7 +15,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: (github.event.pull_request.base.ref == 'test-github-action' && github.event.pull_request.action == 'opened') || (github.event.action == 'closed' && github.event.pull_request.base.ref == 'main')
+    #if: (github.event.pull_request.base.ref == 'test-github-action' && github.event.pull_request.action == 'opened') || (github.event.action == 'closed' && github.event.pull_request.base.ref == 'main')
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
