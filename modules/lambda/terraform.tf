@@ -79,3 +79,22 @@ module "lambda_function_in_vpc" {
     data.aws_caller_identity.current
   ]
 }
+
+resource "aws_cloudwatch_event_target" "trigger_lambda" {
+  target_id = module.lambda_function_in_vpc.lambda_function_name
+  rule      = aws_cloudwatch_event_rule.trigger_lambda.name
+  arn       = module.lambda_function_in_vpc.lambda_function_arn
+}
+
+resource "aws_cloudwatch_event_rule" "trigger_lambda" {
+  name_prefix = "lambda_csv"
+  schedule_expression = "cron(0 * * * *)"
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
+    statement_id = "AllowExecutionFromCloudWatch"
+    action = "lambda:InvokeFunction"
+    function_name = module.lambda_function_in_vpc.lambda_function_name
+    principal = "events.amazonaws.com"
+    source_arn = aws_cloudwatch_event_rule.trigger_lambda.arn
+}

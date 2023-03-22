@@ -1,9 +1,11 @@
-data "aws_secretsmanager_random_password" "db_password" {
-  password_length            = 10
-  exclude_numbers            = false
-  require_each_included_type = true
-  include_space              = false
-  exclude_punctuation        = true
+resource "random_password" "db_master_pass" {
+  length            = 20
+  special           = true
+  min_special       = 5
+  override_special  = "!#$%^&*()-_=+[]{}<>:?"
+  keepers           = {
+    pass_version  = 1
+  }
 }
 
 resource "aws_secretsmanager_secret" "db_password_secret" {
@@ -22,10 +24,10 @@ resource "aws_secretsmanager_secret" "db_password_secret" {
 
 resource "aws_secretsmanager_secret_version" "db_password_secret_version" {
   secret_id     = aws_secretsmanager_secret.db_password_secret.id
-  secret_string = data.aws_secretsmanager_random_password.db_password.random_password
+  secret_string = random_password.db_master_pass.result
   depends_on = [
     aws_secretsmanager_secret.db_password_secret,
-    data.aws_secretsmanager_random_password.db_password,
+    random_password.db_master_pass,
   ]
 }
 
@@ -68,7 +70,7 @@ resource "aws_rds_cluster" "database" {
     min_capacity = 0.5
   }
   depends_on = [
-    data.aws_secretsmanager_secret_version.db_password_secret
+    aws_secretsmanager_secret_version.db_password_secret_version
   ]
 }
 
