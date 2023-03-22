@@ -58,7 +58,7 @@ jobs:
         else
           environment_value="staging"
         fi
-        echo "VARIABLE_VALUE=$environment_value" >> $GITHUB_ENV
+        echo "environment_value=$environment_value" >> $GITHUB_ENV
 
     - name: Use Environment Variable
       run: |
