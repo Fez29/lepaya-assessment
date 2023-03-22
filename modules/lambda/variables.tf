@@ -34,5 +34,3 @@ variable "SECRETS_NAME" {}
 variable "RDS_TABLE" {}
 variable "S3_OBJECT_KEY" {}
 variable "S3_BUCKET_NAME" {}
-variable "DB_MASTER_USERNAME" {}
-variable "LOG_LEVEL" {}

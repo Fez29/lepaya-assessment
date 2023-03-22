@@ -42,7 +42,6 @@ module "lambda" {
   S3_BUCKET_NAME     = module.platform.aws_s3_bucket_output.id
   DB_MASTER_USERNAME = var.common.master_username
   RDS_TABLE          = "emails"
-  LOG_LEVEL          = "ERROR"
 
   depends_on = [
     aws_s3_bucket_object.csv,
