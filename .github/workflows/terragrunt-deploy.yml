@@ -12,7 +12,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: (github.event.action == 'opened' && github.event.pull_request.base.ref == 'test-github-action') || (github.event.action == 'closed' && github.event.pull_request.base.ref == 'main')
+    if: (github.event.pull_request.base.ref == 'test-github-action') || (github.event.action == 'closed' && github.event.pull_request.base.ref == 'main')
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
@@ -50,8 +50,26 @@ jobs:
       run: |
         make prepare-lambda
 
-    - name: Deploy Infrastructure with Terragrunt
-      working-directory: ${{ github.workspace }}/deployment/staging
+      - name: Set Environment Variable Based on Branch
       run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        VARIABLE_VALUE=""
+        if [[ "$BRANCH_NAME" == "main" ]]; then
+          VARIABLE_VALUE="production"
+        elif [[ "$BRANCH_NAME" == "test-github-action" ]]; then
+          VARIABLE_VALUE="staging"
+        else
+          VARIABLE_VALUE="value_for_other_branches"
+        fi
+        echo "VARIABLE_VALUE=$VARIABLE_VALUE" >> $GITHUB_ENV
+
+    - name: Use Environment Variable
+      run: |
+        echo "Variable value is: ${{ env.VARIABLE_VALUE }}"
+
+    - name: Deploy Infrastructure with Terragrunt
+      working-directory: ${{ github.workspace }}
+      run: |
+        /deployment/${{ env.VARIABLE_VALUE }}
         terragrunt init
         terragrunt apply -auto-approve
