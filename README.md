@@ -46,6 +46,8 @@ A function to help with setting up your AWS environment before running Terraform
 - Terragrunt is explictly installed due the fact that no built in github action plugin exists.
 - The Lambda is created in the pipeline using the same Makefile that is used for setting up locally.
 - We then deploy the terraform code using Terragrunt.
+- The pipeline will trigger on all pull requests to feature branches and on pushes to main, in most cases with would be a pull request completion from a feature branch. The approach here would be highly dependent on the company and its branching strategy as well as the SDLC  being followed. 
+    - For example here I have decided that it doesn't make sense to build on every push to the feature branch but rather only when a pull request is logged. Otherwise you could trigger on pushes and on the pull request for example.
 
 ## Security
 - The S3 bucket is encrypted by default by AWS but we have also ensured this is the case by explicity defining is in the creation.
