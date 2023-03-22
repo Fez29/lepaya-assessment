@@ -3,14 +3,12 @@ name: Terragrunt Deploy
 on:
   pull_request:
     branches:
-      - test-github-action
-    types:
-      - opened
-  pull_request_target:
-      types:
-        - closed
-      branches:
-        - main
+      - main
+  # pull_request_target:
+  #     types:
+  #       - closed
+  #     branches:
+  #       - main
 
 jobs:
   deploy:
