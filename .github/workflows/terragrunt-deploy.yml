@@ -1,17 +1,19 @@
 name: Terragrunt Deploy
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
+  # pull_request_target:
+  #     types:
+  #       - closed
+  #     branches:
+  #       - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
+    #if: (github.event.pull_request.base.ref == 'test-github-action' && github.event.pull_request.action == 'opened') || (github.event.action == 'closed' && github.event.pull_request.base.ref == 'main')
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
@@ -21,7 +23,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-2
+        aws-region: eu-central-1
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -34,8 +36,40 @@ jobs:
         chmod +x terragrunt_linux_amd64
         sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
 
-    - name: Deploy Infrastructure with Terragrunt
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install pip
       run: |
-        cd deployment/staging/terragrunt.hcl
+        python -m ensurepip --upgrade
+        python -m pip install --upgrade pip
+
+    - name: Deploy Infrastructure with Terragrunt
+      working-directory: ${{ github.workspace }}
+      run: |
+        make prepare-lambda
+
+    - name: Set Environment Variable Based on Branch
+      run: |
+        BRANCH_NAME=${{ github.event.pull_request.head.ref }}
+        VARIABLE_VALUE=""
+        if [[ "$BRANCH_NAME" == "main" ]]; then
+          VARIABLE_VALUE="production"
+        elif [[ "$BRANCH_NAME" == "test-github-action" ]]; then
+          VARIABLE_VALUE="staging"
+        else
+          VARIABLE_VALUE="value_for_other_branches"
+        fi
+        echo "VARIABLE_VALUE=$VARIABLE_VALUE" >> $GITHUB_ENV
+
+    - name: Use Environment Variable
+      run: |
+        echo "Variable value is: ${{ env.VARIABLE_VALUE }}"
+
+    - name: Deploy Infrastructure with Terragrunt
+      working-directory: ${{ github.workspace }}/deployment/${{ env.VARIABLE_VALUE }}
+      run: |
         terragrunt init
         terragrunt apply -auto-approve
