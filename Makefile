@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: create-resources
 
 All:
@@ -7,6 +9,13 @@ All:
 create-resources:
 	AWS_PAGER="" aws s3api create-bucket --bucket my-lepaya-demo-bucket --region eu-central-1 --create-bucket-configuration LocationConstraint=eu-central-1
 	AWS_PAGER="" aws dynamodb create-table --table-name my-lepaya-demo-terraform-state-lock --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST
+
+install_python_pip:
+	@echo "Installing Python 3..."
+	sudo apt-get update
+	sudo apt-get install -y python3
+	@echo "Installing pip..."
+	sudo apt-get install -y python3-pip
 
 prepare-lambda:
 	cd src && pip3.9 install -r requirements.txt -t . && zip -r9 lambda_function.zip .
