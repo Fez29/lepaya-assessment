@@ -44,6 +44,7 @@ module "lambda" {
   RDS_TABLE = "emails"
 
   depends_on = [
-    aws_s3_bucket_object.csv
+    aws_s3_bucket_object.csv,
+    module.platform
   ]
 }

@@ -31,8 +31,7 @@ module "lambda_function_in_vpc" {
     "RDS_TABLE"               = "${var.RDS_TABLE}"
     "SECRETS_NAME"            = "${var.SECRETS_NAME}"
     "POWERTOOLS_SERVICE_NAME" = "lambda"
-    #TODO
-    "LOG_LEVEL"               = "INFO"
+    "LOG_LEVEL"               = "ERROR"
     "REGION"                  = "${var.common.region}"
   }
 
@@ -62,7 +61,7 @@ module "lambda_function_in_vpc" {
     },
     s3_read = {
       effect    = "Allow",
-      actions   = ["s3:GetObject","s3:PutObject","s3:DeleteObject"],
+      actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
       resources = ["${aws_s3_bucket.builds.arn}/*"]
     },
     ec2_delete_network_interface = {
@@ -87,14 +86,14 @@ resource "aws_cloudwatch_event_target" "trigger_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "trigger_lambda" {
-  name_prefix = "lambda_csv"
+  name_prefix         = "lambda_csv"
   schedule_expression = "cron(0 * * * *)"
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = module.lambda_function_in_vpc.lambda_function_name
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.trigger_lambda.arn
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_function_in_vpc.lambda_function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.trigger_lambda.arn
 }

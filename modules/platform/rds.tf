@@ -1,10 +1,10 @@
 resource "random_password" "db_master_pass" {
-  length            = 20
-  special           = true
-  min_special       = 5
-  override_special  = "!#$%^&*()-_=+[]{}<>:?"
-  keepers           = {
-    pass_version  = 1
+  length           = 20
+  special          = true
+  min_special      = 5
+  override_special = "!#$%^&*()-_=+[]{}<>:?"
+  keepers = {
+    pass_version = 1
   }
 }
 
@@ -63,7 +63,8 @@ resource "aws_rds_cluster" "database" {
   db_subnet_group_name                = aws_db_subnet_group.database.name
   vpc_security_group_ids              = [aws_security_group.database_rds_sg.id]
   iam_database_authentication_enabled = true
-
+  # Take care when changing password on Production as the password will not update until maintenance window!
+  apply_immediately = var.data.production == false ? true : false
 
   serverlessv2_scaling_configuration {
     max_capacity = 64.0 # Max 128
@@ -81,7 +82,8 @@ resource "aws_rds_cluster_instance" "serverless_v2_mysql_instance" {
   engine_version       = aws_rds_cluster.database.engine_version
   publicly_accessible  = true
   db_subnet_group_name = aws_db_subnet_group.database.name
-  apply_immediately    = var.data.production == false ? true : false
+  # Take care when changing password on Production as the password will not update until maintenance window!
+  apply_immediately = var.data.production == false ? true : false
 
   tags = {
     Name = "${var.data.environment}-${var.common.project}-mysql-instance"
