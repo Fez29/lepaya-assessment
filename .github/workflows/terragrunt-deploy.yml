@@ -70,6 +70,6 @@ jobs:
     - name: Deploy Infrastructure with Terragrunt
       working-directory: ${{ github.workspace }}
       run: |
-        /deployment/${{ env.VARIABLE_VALUE }}
+        cd /deployment/${{ env.VARIABLE_VALUE }}
         terragrunt init
         terragrunt apply -auto-approve
