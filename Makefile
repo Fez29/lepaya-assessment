@@ -14,7 +14,7 @@ install_python_pip:
 	sudo apt-get install -y python3-pip
 
 prepare_lambda:
-	cd src && mkdir -p ./modules/python3 && pip3.9 install -r requirements.txt -t ./modules/python3 && zip -r9 lambda_function.zip .
+	cd src && mkdir -p ./modules/python3 && pip3.9 -q install -r requirements.txt -t ./modules/python3 && zip -r9 lambda_function.zip .
 
 terragrunt_apply_staging:
 	cd ./deployment/staging && terragrunt init && terragrunt apply
