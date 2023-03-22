@@ -29,3 +29,7 @@ data "aws_subnets" "public_subnets" {
     aws_subnet.public
   ]
 }
+
+data "aws_vpc" "main" {
+  id = aws_vpc.main.id
+}
