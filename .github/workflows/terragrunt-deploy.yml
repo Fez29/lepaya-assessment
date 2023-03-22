@@ -1,12 +1,14 @@
 name: Terragrunt Deploy
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - 'features/**'
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
   deploy:
