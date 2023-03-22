@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0,'./modules/python3')
 import os
 import boto3
 from botocore.exceptions import ClientError
@@ -5,6 +7,7 @@ import pymysql
 import csv
 from aws_lambda_powertools import Logger, Tracer
 from botocore.client import Config
+
 
 logger = Logger()
 tracer = Tracer()
