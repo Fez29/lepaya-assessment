@@ -3,8 +3,16 @@ locals {
 }
 
 resource "aws_s3_bucket" "builds" {
-  bucket = "${var.common.project}-builds-bucket"
+  bucket = "${var.common.project}-${var.data.environment}-builds-bucket"
   acl    = "private"
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
 resource "aws_s3_object" "upload_file" {
@@ -18,7 +26,7 @@ data "aws_caller_identity" "current" {}
 module "lambda_function_in_vpc" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "my-lambda-in-vpc"
+  function_name = "${var.data.environment}-${var.common.project}"
   description   = "Upload CSV to RDS Lambda"
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"

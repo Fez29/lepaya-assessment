@@ -1,12 +1,14 @@
 name: Terragrunt Deploy
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - 'features/**'
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -31,7 +33,11 @@ jobs:
           echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
         fi
-    
+
+    - name: Use Environment Variable
+      run: |
+        echo "Variable value is: ${{ env.environment_value }}"
+
     - name: Configure AWS Credentials Action For GitHub Actions
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -63,11 +69,7 @@ jobs:
     - name: Prepare Lambda for deployment
       working-directory: ${{ github.workspace }}
       run: |
-        make prepare-lambda
-
-    - name: Use Environment Variable
-      run: |
-        echo "Variable value is: ${{ env.environment_value }}"
+        make prepare_lambda
 
     - name: Deploy Infrastructure with Terragrunt
       working-directory: ${{ github.workspace }}/deployment/${{ env.environment_value }}
