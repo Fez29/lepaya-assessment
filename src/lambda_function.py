@@ -52,7 +52,7 @@ def lambda_handler(event, context):
     try:
         secret_name = SECRETS_NAME
         region_name = REGION
-        logger.info('Create Clients')
+
         session = boto3.session.Session()
         client = session.client(
             service_name='secretsmanager',
@@ -76,18 +76,14 @@ def lambda_handler(event, context):
             elif e.response['Error']['Code'] == 'InternalServiceError':
                 logger.info("An error occurred on service side:", e)
         else:
-            logger.info('In get_secret_value_response')
             # Secrets Manager decrypts the secret value using the associated KMS CMK
             # Depending on whether the secret was a string or binary, only one of these fields will be populated
             if 'SecretString' in get_secret_value_response:
-                logger.info('Inside IF')
                 text_secret_data = get_secret_value_response['SecretString']
             else:
-                logger.info('Inside ELSE')
                 binary_secret_data = get_secret_value_response['SecretBinary']
         
         logger.info('Connecting to database')
-        logger.info(text_secret_data)
         # Connect to the database
         conn = pymysql.connect(host=RDS_HOST,
                                #TODO: fix
@@ -95,14 +91,11 @@ def lambda_handler(event, context):
                                password=text_secret_data,
                                db=RDS_DATABASE,
                                connect_timeout=10)
-        logger.info('Connected to database')
 
-        logger.info('Starting table creation')
         # Check if the table exists and create it if it does not
         with conn.cursor() as cursor:
             if not table_exists(cursor, RDS_TABLE):
                 create_table(cursor, RDS_TABLE)
-        logger.info('Completed table creation')
 
         s3_object = s3.get_object(Bucket=S3_BUCKET_NAME, Key=S3_OBJECT_KEY)
         file_content = s3_object['Body'].read().decode('utf-8')
@@ -117,8 +110,6 @@ def lambda_handler(event, context):
                 cursor.execute(insert_query, tuple(row))
                 conn.commit()
 
-        logger.info('Completed uploading values to database')
-
         # Commit the changes and close the connection
         conn.close()
 
@@ -132,5 +123,3 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': 'An error occurred while uploading CSV file to RDS MySQL instance'
         }
-
-###############################################################
