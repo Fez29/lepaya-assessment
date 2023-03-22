@@ -20,18 +20,17 @@ jobs:
       run: |
         BRANCH_NAME=${{ github.event.pull_request.head.ref }}
         environment_value=""
+        AWS_ACCESS_KEY=""
+        AWS_SECRET_ACCESS_KEY=""
         if [[ "$BRANCH_NAME" == "main" ]]; then
-          environment_value="production"
-          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_PRODUCTION }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+          echo "environment_value=production" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}" >> $GITHUB_ENV
         else
-          environment_value="staging"
-          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_PRODUCTION }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PRODUCTION }}
+          echo "environment_value=staging" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_PRODUCTION }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PRODUCTION }}" >> $GITHUB_ENV
         fi
-        echo "environment_value=$environment_value" >> $GITHUB_ENV
-        echo "AWS_ACCESS_KEY=$AWS_ACCESS_KEY" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
     
     - name: Configure AWS Credentials Action For GitHub Actions
       uses: aws-actions/configure-aws-credentials@v2
