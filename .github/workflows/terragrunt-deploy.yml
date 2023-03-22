@@ -3,7 +3,6 @@ name: Terragrunt Deploy
 on:
   push:
     branches:
-      - 'features/**'
       - main
   pull_request:
 
