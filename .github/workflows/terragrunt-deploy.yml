@@ -3,15 +3,17 @@ name: Terragrunt Deploy
 on:
   push:
     branches:
-      - main
-  pull_request:
-    types:
-      - closed
+      - test-github-action
+  # pull_request:
+  #   types:
+  #     - open
+  #   branches:
+  #     - test-github-action
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
+    #if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
@@ -35,6 +37,7 @@ jobs:
         sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
 
     - name: Deploy Infrastructure with Terragrunt
+      working-directory: ${{ github.workspace }}
       run: |
         cd deployment/staging/terragrunt.hcl
         terragrunt init
