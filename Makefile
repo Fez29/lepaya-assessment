@@ -18,7 +18,7 @@ install_python_pip:
 	sudo apt-get install -y python3-pip
 
 prepare-lambda:
-	cd src && pip3.9 install -r requirements.txt -t . && zip -r9 lambda_function.zip .
+	cd src && mkdir -p ./modules/python3 && pip3.9 install -r requirements.txt -t ./modules/python3 && zip -r9 lambda_function.zip .
 
 # install-terra-linux:
 # # Install Terraform

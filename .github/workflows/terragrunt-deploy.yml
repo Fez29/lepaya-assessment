@@ -4,11 +4,9 @@ on:
   pull_request:
     branches:
       - main
-  # pull_request_target:
-  #     types:
-  #       - closed
-  #     branches:
-  #       - main
+  push:
+    branches:
+      - 'features/**'
 
 jobs:
   deploy:
@@ -46,7 +44,7 @@ jobs:
         python -m ensurepip --upgrade
         python -m pip install --upgrade pip
 
-    - name: Deploy Infrastructure with Terragrunt
+    - name: Prepare Lambda for deployment
       working-directory: ${{ github.workspace }}
       run: |
         make prepare-lambda
@@ -54,22 +52,19 @@ jobs:
     - name: Set Environment Variable Based on Branch
       run: |
         BRANCH_NAME=${{ github.event.pull_request.head.ref }}
-        VARIABLE_VALUE=""
+        environment_value=""
         if [[ "$BRANCH_NAME" == "main" ]]; then
-          VARIABLE_VALUE="production"
-        elif [[ "$BRANCH_NAME" == "test-github-action" ]]; then
-          VARIABLE_VALUE="staging"
+          environment_value="production"
         else
-          VARIABLE_VALUE="value_for_other_branches"
+          environment_value="staging"
         fi
-        echo "VARIABLE_VALUE=$VARIABLE_VALUE" >> $GITHUB_ENV
 
     - name: Use Environment Variable
       run: |
-        echo "Variable value is: ${{ env.VARIABLE_VALUE }}"
+        echo "Variable value is: ${{ env.environment_value }}"
 
     - name: Deploy Infrastructure with Terragrunt
-      working-directory: ${{ github.workspace }}/deployment/${{ env.VARIABLE_VALUE }}
+      working-directory: ${{ github.workspace }}/deployment/${{ env.environment_value }}
       run: |
         terragrunt init
         terragrunt apply -auto-approve
