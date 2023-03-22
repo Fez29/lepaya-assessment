@@ -67,7 +67,7 @@ jobs:
     - name: Prepare Lambda for deployment
       working-directory: ${{ github.workspace }}
       run: |
-        make prepare-lambda
+        make prepare_lambda
 
     - name: Deploy Infrastructure with Terragrunt
       working-directory: ${{ github.workspace }}/deployment/${{ env.environment_value }}
