@@ -39,21 +39,18 @@ data "aws_secretsmanager_secret_version" "db_password_secret" {
 }
 
 resource "aws_rds_cluster" "database" {
-  # TODO: investigate why availability zones always has c zone
   lifecycle {
     ignore_changes = [
       availability_zones # added to ensure cluster is not recreated on every run
     ]
   }
-  cluster_identifier = "${var.data.environment}${var.common.project}"
-  engine             = "aurora-mysql"
-  engine_mode        = "provisioned"
-  engine_version     = "8.0.mysql_aurora.3.02.0"
-  database_name      = "${var.data.environment}${var.data.environment_data.database_name}"
-  availability_zones = var.data.availability_zones
-  # TODO: change to using AWS secrets
-  master_username = var.common.master_username
-  #master_password = "password"
+  cluster_identifier                  = "${var.data.environment}${var.common.project}"
+  engine                              = "aurora-mysql"
+  engine_mode                         = "provisioned"
+  engine_version                      = "8.0.mysql_aurora.3.02.0"
+  database_name                       = "${var.data.environment}${var.data.environment_data.database_name}"
+  availability_zones                  = var.data.availability_zones
+  master_username                     = var.common.master_username
   master_password                     = data.aws_secretsmanager_secret_version.db_password_secret.secret_string
   backup_retention_period             = 7
   preferred_backup_window             = "03:00-04:00"
@@ -64,7 +61,8 @@ resource "aws_rds_cluster" "database" {
   vpc_security_group_ids              = [aws_security_group.database_rds_sg.id]
   iam_database_authentication_enabled = true
   # Take care when changing password on Production as the password will not update until maintenance window!
-  apply_immediately = var.data.production == false ? true : false
+  apply_immediately                   = var.data.production == false ? true : false
+  storage_encrypted                   = true
 
   serverlessv2_scaling_configuration {
     max_capacity = 64.0 # Max 128
@@ -80,10 +78,10 @@ resource "aws_rds_cluster_instance" "serverless_v2_mysql_instance" {
   instance_class       = "db.serverless"
   engine               = aws_rds_cluster.database.engine
   engine_version       = aws_rds_cluster.database.engine_version
-  publicly_accessible  = true
+  publicly_accessible  = false
   db_subnet_group_name = aws_db_subnet_group.database.name
   # Take care when changing password on Production as the password will not update until maintenance window!
-  apply_immediately = var.data.production == false ? true : false
+  apply_immediately    = var.data.production == false ? true : false
 
   tags = {
     Name = "${var.data.environment}-${var.common.project}-mysql-instance"
@@ -106,8 +104,7 @@ resource "aws_security_group" "database_rds_sg" {
 
 resource "aws_db_subnet_group" "database" {
   name = "${var.data.environment}-${var.common.project}-rds"
-  # TODO: change back to private
-  subnet_ids = data.aws_subnets.private_subnets.ids # Replace with your preferred subnets
+  subnet_ids = data.aws_subnets.private_subnets.ids
   depends_on = [
     data.aws_subnets.private_subnets
   ]
