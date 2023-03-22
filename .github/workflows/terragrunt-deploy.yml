@@ -4,10 +4,13 @@ on:
   pull_request:
     branches:
       - test-github-action
-      - main
     types:
       - opened
-      - closed
+  pull_request_target:
+      types:
+        - closed
+      branches:
+        - main
 
 jobs:
   deploy:
